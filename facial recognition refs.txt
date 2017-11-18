@@ -20,3 +20,22 @@ https://askubuntu.com/questions/813907/cant-install-wampserver
 
 
 SEARCH DIT LIBRARY: Jameel Briones, DT228
+
+
+
+
+Technical [Internet]. Ring.com. 2017 [cited 28 October 2017]. Available from: https://ring.com/faq#technical
+Specs [Internet]. YI. 2017 [cited 28 October 2017]. Available from: https://www.yitechnology.com/yi-1080p-home-camera-specs
+Raspberry Pi 3 Model B - Raspberry Pi [Internet]. Raspberry Pi. 2017 [cited 28 October 2017]. Available from: https://www.raspberrypi.org/products/raspberry-pi-3-model-b/
+Raspberry Pi 2 Model B - Raspberry Pi [Internet]. Raspberry Pi. 2017 [cited 28 October 2017]. Available from: https://www.raspberrypi.org/products/raspberry-pi-2-model-b/
+openCV ML vs Tensorflow? - OpenCV Q&A Forum [Internet]. Answers.opencv.org. 2016 [cited 28 October 2017]. Available from: http://answers.opencv.org/question/97202/opencv-ml-vs-tensorflow/
+Klosowski T. I Want to Write iOS Apps. Where Do I Start? [Internet]. Lifehacker.com. 2014 [cited 28 October 2017]. Available from: https://lifehacker.com/i-want-to-write-ios-apps-where-do-i-start-1644802175
+Firebase Cloud Messaging [Internet]. Firebase. 2017 [cited 29 October 2017]. Available from: https://firebase.google.com/docs/cloud-messaging/
+GCM and FCM Frequently Asked Questions [Internet]. Google Developers. 2017 [cited 29 October 2017]. Available from: https://developers.google.com/cloud-messaging/faq
+Camera Module V2 - Raspberry Pi [Internet]. Raspberry Pi. 2017 [cited 29 October 2017]. Available from: https://www.raspberrypi.org/products/camera-module-v2/#buy-now-modal
+Pi NoIR Camera V2 - Raspberry Pi [Internet]. Raspberry Pi. 2017 [cited 29 October 2017]. Available from: https://www.raspberrypi.org/products/pi-noir-camera-v2/
+Difference between NoIR and IR [Internet]. 2015 [cited 29 October 2017]. Available from: https://pimylifeup.com/raspberry-pi-camera-vs-noir-camera/
+Koenig Solutions. The Advantages of LAMP as a Web Development Platform [Internet]. Koenig. 2015 [cited 4 November 2017]. Available from: http://blog.koenig-solutions.com/2015/06/23/advantages-of-lamp-as-a-web-development-platform/#sthash.ltyP7hy0.dpbs
+
+
+https://github.com/opencv/opencv_contrib/blob/master/README.md
