@@ -19,7 +19,7 @@ import static android.content.ContentValues.TAG;
 
 public class LoginActivity extends Activity implements View.OnClickListener {
     private SignInButton signInButton;
-    private GoogleSignInClient signInClient;
+    static GoogleSignInClient signInClient;
     private static int RC_SIGN_IN = 0;
 
     @Override
