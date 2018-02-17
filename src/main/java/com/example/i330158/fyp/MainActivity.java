@@ -2,21 +2,13 @@ package com.example.i330158.fyp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
-
-import java.util.Properties;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by I330158 on 24/01/2018.
@@ -24,8 +16,9 @@ import static android.content.ContentValues.TAG;
 
 public class MainActivity extends Activity implements AdapterView.OnItemClickListener{
     private ListView mainMenu;
-    private String[] mainOptions = {"Call 999", "Text Neighbour", "View Live Stream", "View Recordings",
+    private String[] mainOptions = {"Call 999", "Text Neighbour", "View Live Stream", "View Images",
             "Settings"};
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +46,8 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
                 Intent streamIntent = new Intent(MainActivity.this, VidStream.class);
                 startActivity(streamIntent);
                 break;
-            case "View Recordings":
-                Intent recordIntent = new Intent(MainActivity.this, Recordings.class);
+            case "View Images":
+                Intent recordIntent = new Intent(MainActivity.this, Images.class);
                 startActivity(recordIntent);
                 break;
             case "Settings":

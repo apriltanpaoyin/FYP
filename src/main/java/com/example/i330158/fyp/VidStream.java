@@ -1,6 +1,7 @@
 package com.example.i330158.fyp;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,7 +25,7 @@ public class VidStream extends Activity implements View.OnClickListener {
     private WebView web_view;
     private Button alert;
     private Thread t;
-    private PairCamera pairing;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,14 +33,14 @@ public class VidStream extends Activity implements View.OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_vidstream);
 
-        if (pairing.isPaired() == true) {
+        if (sharedPreferences.getBoolean("paired", false) == true) {
             t = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         JSch jsch = new JSch();
-                        Session session = jsch.getSession("pi", pairing.getPiIP(), 22);
-                        session.setPassword(pairing.getPiPasswd());
+                        Session session = jsch.getSession("pi", sharedPreferences.getString("IP", "Unknown IP"), 22);
+                        session.setPassword(sharedPreferences.getString("password", "Wrong password"));
 
                         // Avoid asking for key confirmation
                         Properties prop = new Properties();
@@ -63,7 +64,7 @@ public class VidStream extends Activity implements View.OnClickListener {
             });
             t.start();
             web_view = (WebView)findViewById(R.id.web_view);
-            web_view.loadUrl("http://" + pairing.getPiIP() + ":8080/test.mjpg");
+            web_view.loadUrl("http://" + sharedPreferences.getString("IP", "Unknown IP") + ":8080/test.mjpg");
         }
         alert = (Button)findViewById(R.id.alert);
         alert.setOnClickListener(this);
@@ -72,14 +73,14 @@ public class VidStream extends Activity implements View.OnClickListener {
     @Override
     protected void onStop(){
         super.onStop();
-        if (pairing.isPaired() == true) {
+        if (sharedPreferences.getBoolean("paired", false) == true) {
             t = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         JSch jsch = new JSch();
-                        Session session = jsch.getSession("pi", pairing.getPiIP(), 22);
-                        session.setPassword(pairing.getPiPasswd());
+                        Session session = jsch.getSession("pi", sharedPreferences.getString("IP", "Unknown IP"), 22);
+                        session.setPassword(sharedPreferences.getString("passowrd", "Wrong password"));
 
                         // Avoid asking for key confirmation
                         Properties prop = new Properties();

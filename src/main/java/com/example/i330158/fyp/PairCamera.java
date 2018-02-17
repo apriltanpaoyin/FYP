@@ -1,8 +1,8 @@
 package com.example.i330158.fyp;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -17,12 +17,11 @@ import static android.content.ContentValues.TAG;
  */
 
 public class PairCamera extends Activity implements View.OnClickListener{
-    private String piIP = "";
-    private String piPasswd = "";
-    private boolean paired = false;
-    private TextView ipAdd;
-    private TextView piPwd;
-    private Button pair;
+    private EditText ipAdd;
+    private EditText piPwd;
+    private Button save;
+    SharedPreferences.Editor editor;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +29,8 @@ public class PairCamera extends Activity implements View.OnClickListener{
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_paircam);
 
-        pair = (Button)findViewById(R.id.pair);
-        pair.setOnClickListener(this);
+        save = (Button)findViewById(R.id.save);
+        save.setOnClickListener(this);
 
         ipAdd = (EditText)findViewById(R.id.ipAddress);
         piPwd = (EditText)findViewById(R.id.password);
@@ -40,36 +39,16 @@ public class PairCamera extends Activity implements View.OnClickListener{
     @Override
     public void onClick(View view) {
         String text = ipAdd.getText().toString();
-        setPiIP(text);
+        editor  = sharedPreferences.edit();
+
+        editor.putString("IP", text);
+        editor.apply();
 
         text = piPwd.getText().toString();
-        setPiPasswd(text);
+        editor.putString("password", text);
+        editor.apply();
 
-        setPaired(true);
-        Toast.makeText(this, "Paired Successfully", Toast.LENGTH_SHORT).show();
-    }
-
-    public String getPiIP() {
-        return piIP;
-    }
-
-    public void setPiIP(String piIP) {
-        this.piIP = piIP;
-    }
-
-    public String getPiPasswd() {
-        return piPasswd;
-    }
-
-    public void setPiPasswd(String piPasswd) {
-        this.piPasswd = piPasswd;
-    }
-
-    public boolean isPaired() {
-        return paired;
-    }
-
-    public void setPaired(boolean paired) {
-        this.paired = paired;
+        editor.putBoolean("paired", true);
+        Toast.makeText(this, "Saved Successfully", Toast.LENGTH_SHORT).show();
     }
 }
