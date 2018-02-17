@@ -45,16 +45,8 @@ def prepare_training_data(data_folder_path):
 				
 	return faces, labels
 
-def get_recognizer():
-	return face_recognizer
-
 # Train on pre-loaded images
-def train_data():
-	faces, labels = prepare_training_data("training-data")
-	face_recognizer = cv2.face.LBPHFaceRecognizer_create()
-	print (type(face_recognizer))
-	face_recognizer.train(faces, np.array(labels))
-	print (type(face_recognizer))
-
-face_recognizer = None
-train_data()
+faces, labels = prepare_training_data("training-data")
+face_recognizer = cv2.face.LBPHFaceRecognizer_create()
+face_recognizer.train(faces, np.array(labels))
+face_recognizer.write("face_model.xml")
