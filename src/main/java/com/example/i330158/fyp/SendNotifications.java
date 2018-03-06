@@ -19,19 +19,18 @@ public class SendNotifications extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        //super.onMessageReceived(remoteMessage);
 
         Log.d(TAG, "Remote message received.");
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        // Request code 0
+        // Request code is 0
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
         NotificationCompat.Builder notiBuilder = (android.support.v7.app.NotificationCompat.Builder) new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.icon)
                 .setContentTitle("Motion Detected")
-                .setContentText(remoteMessage.getData().get("message"))
+                .setContentText(remoteMessage.getData().get("message_body"))
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
 

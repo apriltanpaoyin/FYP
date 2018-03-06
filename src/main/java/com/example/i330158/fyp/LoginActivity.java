@@ -1,32 +1,60 @@
 package com.example.i330158.fyp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.drive.Drive;
+
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
+
+import java.util.Properties;
 
 import static android.content.ContentValues.TAG;
 
-public class LoginActivity extends Activity implements View.OnClickListener {
+public class LoginActivity extends Activity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private SignInButton signInButton;
     static GoogleSignInClient signInClient;
     private static int RC_SIGN_IN = 0;
+    static  GoogleSignInAccount acc;
+    public SharedPreferences sharedPreferences;
+    public static String MyPREFERENCES = "MyPrefs";
+
+    // TOKEN STUFF
+    private static GoogleApiClient apiClient;
+    public String prevKey = "notset";
+    public String token;
+    protected static final int REQUEST_CODE_RESOLUTION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login);
+        sharedPreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
         signInButton = (com.google.android.gms.common.SignInButton)findViewById(R.id.signInButton);
         signInButton.setOnClickListener(this);
@@ -38,12 +66,13 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
         //Create client with provided info
         signInClient = GoogleSignIn.getClient(this, signInOptions);
+        token = FirebaseInstanceId.getInstance().getToken();
     }
 
     //Check for previously signed in user & update UI accordingly
     protected void onStart(){
         super.onStart();
-        GoogleSignInAccount acc = GoogleSignIn.getLastSignedInAccount(this);
+        acc = GoogleSignIn.getLastSignedInAccount(this);
         updateUI(acc);
     }
 
@@ -59,7 +88,83 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         //If returned result is expected
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            apiClient.connect();
             handleSignIn(task);
+        }
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        if (apiClient == null) {
+            apiClient = new GoogleApiClient.Builder(this)
+                    .addApi(Drive.API)
+                    .addScope(Drive.SCOPE_FILE)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+        }
+        apiClient.connect();
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSch jsch = new JSch();
+                    Session session = jsch.getSession("pi", /*sharedPreferences.getString("IP", "Unknown IP")*/"192.168.1.10", 22);
+//                    session.setPassword(sharedPreferences.getString("password", "Wrong password"));
+                    session.setPassword("raspberry");
+
+                    // Avoid asking for key confirmation
+                    Properties prop = new Properties();
+                    prop.put("StrictHostKeyChecking", "no");
+                    session.setConfig(prop);
+
+                    Log.d(TAG, "SSH Connecting");
+                    session.connect();
+                    Log.d(TAG, "SSH connected");
+
+                    Channel channelssh = session.openChannel("exec");
+                    ((ChannelExec) channelssh).setCommand("perl -pi -w -e 's/" + prevKey + "/" +
+                            token + "/g' /home/pi/FYP/notify.py");
+                    channelssh.setInputStream(null);
+                    ((ChannelExec) channelssh).setErrStream(System.err);
+
+                    channelssh.connect();
+                    channelssh.disconnect();
+                    session.disconnect();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                prevKey = token;
+            }
+        });
+        System.out.println(token);
+        t.start();
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        Log.i(TAG, "Google Api Client connection suspended");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.i(TAG, "Google Api Client connection failed: " + result.toString());
+        if (!result.hasResolution()) {
+            // show the localized error dialog.
+            GoogleApiAvailability.getInstance().getErrorDialog(this, result.getErrorCode(), 0)
+                    .show();
+            return;
+        }
+        try {
+            result.startResolutionForResult(this, REQUEST_CODE_RESOLUTION);
+        } catch (IntentSender.SendIntentException e) {
+            Log.e(TAG, "Exception while starting resolution activity", e);
         }
     }
 
@@ -76,14 +181,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     }
 
     private void updateUI(GoogleSignInAccount acc){
-        if (acc == null) {
-            //remain in this page?
-            //Display error message
-//            AlertDialog err = new AlertDialog.Builder(this).create();
-//            err.setTitle("Error");
-//            err.setMessage("An error occurred while signing in.");
-//            err.show();
-        } else {
+        if (acc != null) {
             Intent mainMenuIntent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(mainMenuIntent);
         }
@@ -98,4 +196,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         }
     }
 
+    public static GoogleApiClient getGoogleApiClient(){
+        return apiClient;
+    }
 }
