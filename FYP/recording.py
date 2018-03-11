@@ -14,6 +14,8 @@ import g_drive
 
 # Define classifier
 lbp = cv2.CascadeClassifier("/home/pi/opencv/opencv/data/lbpcascades/lbpcascade_frontalface.xml");
+# Existing subject names
+subjects = ["", "Pao Yin"]
 
 # Argument parser
 ap = argparse.ArgumentParser()
@@ -69,8 +71,11 @@ def predict(img):
 	
 	# Draw box around predicted face
 	(x, y, w, h) = box
-	# Put the predicted name
-	cv2.putText(img, name, (box[0], box[1]+h+5), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
+	
+	print (confidence)
+	if confidence < 120:
+		# Put the predicted name
+		cv2.putText(img, name, (box[0], box[1]+h+5), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
 	
 	return img
 	
@@ -164,10 +169,10 @@ while True:
 	cv2.putText(I, timestmp, (10, I.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
 	
 	# If movement, upload to drive
-	if text == "Motion Detected":
-		upload_image()
-	else:
-		motion = 0
+	#if text == "Motion Detected":
+		#upload_image()
+	#else:
+		#motion = 0
 	
 	# Write to stdout
 	#Istr = np.array2string(I)
