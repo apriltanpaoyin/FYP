@@ -8,9 +8,11 @@ import numpy as np
 import sys
 import vlc
 import json
+from threading import Thread
 
 #from training import get_recognizer
 import g_drive
+import notify
 
 # Define classifier
 lbp = cv2.CascadeClassifier("/home/pi/opencv/opencv/data/lbpcascades/lbpcascade_frontalface.xml");
@@ -72,7 +74,6 @@ def predict(img):
 	# Draw box around predicted face
 	(x, y, w, h) = box
 	
-	print (confidence)
 	if confidence < 120:
 		# Put the predicted name
 		cv2.putText(img, name, (box[0], box[1]+h+5), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
@@ -107,13 +108,13 @@ def upload_image():
 				notify.notify()
 				
 				# CHECK TO SEE IF A FACE HAS BEEN RECOGNIZED BEFORE PLAYING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				if conf["alarmSet"]:
+				if conf["alarm_set"]:
 					try:
 						thread = Thread(target = alarm_sound, args=())
 						thread.start()
 						thread.join()
-					except:
-						print ("Thread didn't work.")
+					except RuntimeError as e:
+						print(e)
 			temp.cleanup()
 			lastUpload = currentTime
 			motionFrames = 0                    
@@ -169,10 +170,10 @@ while True:
 	cv2.putText(I, timestmp, (10, I.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
 	
 	# If movement, upload to drive
-	#if text == "Motion Detected":
-		#upload_image()
-	#else:
-		#motion = 0
+	if text == "Motion Detected":
+		upload_image()
+	else:
+		motion = 0
 	
 	# Write to stdout
 	#Istr = np.array2string(I)
