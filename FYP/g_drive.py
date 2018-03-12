@@ -21,9 +21,19 @@ def get_tmpimg():
 
 def authentication():
 	try:
-		gauth.LocalWebServerAuth()
-	except:
-		print ("gauth failed")
+		print("before load")
+		gauth.LoadCredentialsFile("credentials.txt")
+		
+		if gauth.credentials is None:
+			gauth.LocalWebserverAuth()
+		elif gauth.access_token_expired:
+			gauth.Refresh()
+		else:
+			gauth.Authorize()
+		
+		gauth.SaveCredentialsFile("credentials.txt")
+	except RuntimeError as e:
+		print(e)
 		
 def uploader(timestamp, temp):
 	file = drive.CreateFile()

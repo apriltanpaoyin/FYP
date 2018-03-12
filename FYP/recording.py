@@ -9,8 +9,6 @@ import sys
 import vlc
 import json
 from threading import Thread
-
-#from training import get_recognizer
 import g_drive
 import notify
 
@@ -18,6 +16,8 @@ import notify
 lbp = cv2.CascadeClassifier("/home/pi/opencv/opencv/data/lbpcascades/lbpcascade_frontalface.xml");
 # Existing subject names
 subjects = ["", "Pao Yin"]
+prevName = ""
+faceCnt = 0
 
 # Argument parser
 ap = argparse.ArgumentParser()
@@ -34,6 +34,11 @@ player = vlc.MediaPlayer("file:///home/pi/FYP/sounds/alarm.mp3")
 # Var for uploads
 motionFrames = 0
 lastUpload = datetime.datetime.utcnow()
+
+# Google Drive Authentication
+g_drive.authentication()
+gauth = g_drive.get_gauth()
+drive = g_drive.get_drive()
 
 # Face detection
 def detect_faces(lbp, I, scaleFactor = 1.1):
@@ -60,6 +65,7 @@ def predict_detect(img):
 
 # Make predictions
 def predict(img):
+	global prevName, faceCnt
 	face, box = predict_detect(img)
 
 	if face is None:
@@ -75,6 +81,12 @@ def predict(img):
 	(x, y, w, h) = box
 	
 	if confidence < 120:
+		if name == prevName:
+			faceCnt += 1
+		else:
+			prevName = name
+			faceCnt = 0
+			
 		# Put the predicted name
 		cv2.putText(img, name, (box[0], box[1]+h+5), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
 	
@@ -95,7 +107,7 @@ def upload_image():
 		motionFrames += 1
 		
 		# If consistent motion
-		if motionFrames >= 8:
+		if motionFrames >= 10:
 			# Write frame to temporary image
 			temp = g_drive.get_tmpimg()
 			cv2.imwrite(temp.path, I)
@@ -107,17 +119,21 @@ def upload_image():
 			if (currentTime - lastUpload).seconds >= 10:
 				notify.notify()
 				
-				# CHECK TO SEE IF A FACE HAS BEEN RECOGNIZED BEFORE PLAYING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				if conf["alarm_set"]:
+				# Check to see if a face has been recognized before playing
+				if conf["alarm_set"] and faceCnt < 5:
 					try:
 						thread = Thread(target = alarm_sound, args=())
 						thread.start()
 						thread.join()
 					except RuntimeError as e:
 						print(e)
+				elif faceCnt > 5:
+					data = {"alarm_set": False}
+					with open(args["conf"], 'w') as c:
+						json.dump(data, c)
 			temp.cleanup()
 			lastUpload = currentTime
-			motionFrames = 0                    
+			motionFrames = 0          
 
 #Read from webcam
 camera = cv2.VideoCapture(0)
@@ -174,10 +190,6 @@ while True:
 		upload_image()
 	else:
 		motion = 0
-	
-	# Write to stdout
-	#Istr = np.array2string(I)
-	#sys.stdout.write(Istr)
 	
 	# Show image (Demo purposes only)
 	cv2.imshow("Security Feed", I)
