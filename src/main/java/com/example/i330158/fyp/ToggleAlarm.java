@@ -3,7 +3,9 @@ package com.example.i330158.fyp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -18,6 +20,11 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.Properties;
 
 import static android.content.ContentValues.TAG;
@@ -31,7 +38,8 @@ public class ToggleAlarm extends Activity implements View.OnClickListener{
     public Button toggle;
     public SharedPreferences sharedPreferences;
     public static String MyPREFERENCES = "MyPrefs";
-    public String prev = "true";
+    public String prev;
+    public String setStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +50,9 @@ public class ToggleAlarm extends Activity implements View.OnClickListener{
 
         status = (TextView) findViewById(R.id.status);
         toggle = (Button)findViewById(R.id.button);
-
         toggle.setOnClickListener(this);
+
+        new ParseJson().execute();
     }
 
     @Override
@@ -61,21 +70,26 @@ public class ToggleAlarm extends Activity implements View.OnClickListener{
     }
 
     public void toggleAlarm() {
-        String curStat = status.getText().toString();
-
-        if (curStat.equals("OFF")) {
-            changeConf("true");
+//        String curStat = status.getText().toString();
+//        if (curStat.equals("OFF")) {
+        if (prev.equals("false")){
+            setStatus = "true";
+//            changeConf("true");
+            changeConf();
             status.setText("ON");
             toggle.setText("Disable Alarm");
         }
-        else if (curStat.equals("ON")) {
-            changeConf("false");
+//        else if (curStat.equals("ON")) {
+        else if (prev.equals("true")){
+            setStatus = "false";
+//            changeConf("false");
+            changeConf();
             status.setText("OFF");
             toggle.setText("Enable Alarm");
         }
     }
 
-    public void changeConf(final String setStatus) {
+    public void changeConf() {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -102,8 +116,8 @@ public class ToggleAlarm extends Activity implements View.OnClickListener{
                     Log.d(TAG, "SSH connected");
 
                     Channel channelssh = session.openChannel("exec");
-                    ((ChannelExec) channelssh).setCommand("perl -pi -w -e 's/" + prev + "/" +
-                            setStatus + "/g' /home/pi/FYP/conf.json");
+                    ((ChannelExec) channelssh).setCommand("sudo perl -pi -w -e 's/" + prev + "/" +
+                            setStatus + "/g' /var/www/html/config.json");
                     channelssh.setInputStream(null);
                     ((ChannelExec) channelssh).setErrStream(System.err);
 
@@ -117,5 +131,43 @@ public class ToggleAlarm extends Activity implements View.OnClickListener{
             }
         });
         t.start();
+    }
+
+    private class ParseJson extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params){
+            try {
+                URL url = new URL("http://192.168.1.10/config.json");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+                StringBuilder builder = new StringBuilder();
+
+                String line = null;
+                while ((line = reader.readLine()) != null){
+                    builder.append(line);
+                }
+                String stringJson = builder.toString();
+
+                JSONObject jsonObject = new JSONObject(stringJson);
+                prev = jsonObject.getString("alarm_set");
+            }
+            catch (Exception e) {
+                Log.d(TAG, "Error:" + e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result){
+            if (prev.equals("true")){
+                status.setText("ON");
+                toggle.setText("Disable Alarm");
+            }
+            else if (prev.equals("false"))
+            {
+                status.setText("OFF");
+                toggle.setText("Enable Alarm");
+            }
+            super.onPostExecute(result);
+        }
     }
 }

@@ -74,7 +74,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
 
     //https://www.tutorialspoint.com/android/android_phone_calls.htm
     private void callEmergency(){
-        String number = "0879609224";
+        String number = "999";
         //ACTION_DIAL used cause emergency numbers cannot be auto-called
         final Intent callIntent = new Intent(Intent.ACTION_DIAL);
         callIntent.setData(Uri.parse("tel:" + number));
