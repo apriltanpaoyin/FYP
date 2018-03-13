@@ -116,21 +116,22 @@ def upload_image():
 			g_drive.uploader(currentTime.__str__(), temp)
 			
 			# Wait for upload to finish then send notification
-			if (currentTime - lastUpload).seconds >= 10:
+			if (currentTime - lastUpload).seconds >= 30:
 				notify.notify()
-				
-				# Check to see if a face has been recognized before playing
-				if conf["alarm_set"] and faceCnt < 5:
-					try:
-						thread = Thread(target = alarm_sound, args=())
-						thread.start()
-						thread.join()
-					except RuntimeError as e:
-						print(e)
-				elif faceCnt > 5:
-					data = {"alarm_set": False}
-					with open(args["conf"], 'w') as c:
-						json.dump(data, c)
+
+			# Check to see if a face has been recognized before alarm
+			if conf["alarm_set"] and faceCnt < 5:
+				try:
+					thread = Thread(target = alarm_sound, args=())
+					thread.start()
+					thread.join()
+				except RuntimeError as e:
+					print(e)
+			elif faceCnt > 5:
+				# If confirmed user, set alarm to off.
+				data = {"alarm_set": False}
+				with open(args["conf"], 'w') as c:
+					json.dump(data, c)
 			temp.cleanup()
 			lastUpload = currentTime
 			motionFrames = 0          

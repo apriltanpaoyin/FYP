@@ -21,7 +21,6 @@ def get_tmpimg():
 
 def authentication():
 	try:
-		print("before load")
 		gauth.LoadCredentialsFile("credentials.txt")
 		
 		if gauth.credentials is None:
