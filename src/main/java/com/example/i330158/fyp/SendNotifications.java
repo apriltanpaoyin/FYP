@@ -11,7 +11,9 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 /**
- * Created by i330158 on 17/02/2018.
+ * Created by Pao Yin Tan on 17/02/2018.
+ *
+ * This creates the notification on the mobile device.
  */
 
 public class SendNotifications extends FirebaseMessagingService {

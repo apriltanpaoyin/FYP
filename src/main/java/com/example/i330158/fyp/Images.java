@@ -27,7 +27,9 @@ import static android.content.ContentValues.TAG;
 import static com.google.android.gms.drive.DriveFile.MODE_READ_ONLY;
 
 /**
- * Created by i330158 on 10/02/2018.
+ * Created by Pao Yin Tan on 10/02/2018.
+ *
+ * This displays an image that the user chooses from their Drive
  */
 
 public class Images extends Activity implements View.OnClickListener{
@@ -51,6 +53,7 @@ public class Images extends Activity implements View.OnClickListener{
     public void onClick(View view){
         switch (view.getId()) {
             case R.id.select_image:
+                // Create a Drive pop-up screen
                 IntentSender intentSender = Drive.DriveApi
                         .newOpenFileActivityBuilder()
                         .setMimeType(new String[]{"image/jpeg"})
@@ -66,6 +69,7 @@ public class Images extends Activity implements View.OnClickListener{
     }
 
     @Override
+    // After selecting an image in the Drive pop-up, this method is executed
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         selectedDriveId = data.getParcelableExtra(OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
         open();
@@ -78,7 +82,7 @@ public class Images extends Activity implements View.OnClickListener{
         selectedDriveId = null;
     }
 
-    //Call back to return a bitmap of the image selected and display it
+    //Callback to return a bitmap of the image selected and display it
     private ResultCallback<DriveApi.DriveContentsResult> driveContentsCallback =
             new ResultCallback<DriveApi.DriveContentsResult>() {
                 @Override

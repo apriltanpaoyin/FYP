@@ -13,18 +13,6 @@
         android:id="@+id/web_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_alignParentStart="true"
-        android:layout_above="@+id/alert"/>
-
-    <Button
-        android:id="@+id/alert"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Play alert message"
-        android:layout_x="52dp"
-        android:layout_y="274dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp" />
+        android:layout_alignParentStart="true"/>
 
 </RelativeLayout>

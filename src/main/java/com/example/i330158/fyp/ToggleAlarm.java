@@ -30,16 +30,20 @@ import java.util.Properties;
 import static android.content.ContentValues.TAG;
 
 /**
- * Created by i330158 on 03/02/2018.
+ * Created by Pao Yin Tan on 03/02/2018.
+ *
+ * This allows the user to toggle the alarm on the Pi. It displays the current status of the alarm
+ * as well.
  */
 
 public class ToggleAlarm extends Activity implements View.OnClickListener{
     public TextView status;
     public Button toggle;
-    public SharedPreferences sharedPreferences;
-    public static String MyPREFERENCES = "MyPrefs";
     public String prev;
     public String setStatus;
+    // Saved preferences for user entered details
+    public SharedPreferences sharedPreferences;
+    public static String MyPREFERENCES = "MyPrefs";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,7 @@ public class ToggleAlarm extends Activity implements View.OnClickListener{
         toggle = (Button)findViewById(R.id.button);
         toggle.setOnClickListener(this);
 
+        // Gets the current status of alarm. See class below.
         new ParseJson().execute();
     }
 
@@ -70,19 +75,16 @@ public class ToggleAlarm extends Activity implements View.OnClickListener{
     }
 
     public void toggleAlarm() {
-//        String curStat = status.getText().toString();
-//        if (curStat.equals("OFF")) {
+        // Checks prev, which is set in ParseJson below. This is the current status. setStatus is the
+        // status that user wants to change to. Current status and button is updated accordingly.
         if (prev.equals("false")){
             setStatus = "true";
-//            changeConf("true");
             changeConf();
             status.setText("ON");
             toggle.setText("Disable Alarm");
         }
-//        else if (curStat.equals("ON")) {
         else if (prev.equals("true")){
             setStatus = "false";
-//            changeConf("false");
             changeConf();
             status.setText("OFF");
             toggle.setText("Enable Alarm");
@@ -90,6 +92,8 @@ public class ToggleAlarm extends Activity implements View.OnClickListener{
     }
 
     public void changeConf() {
+        // SSH
+        // Updates the alarm configuration in the Pi with the desired status
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -127,6 +131,7 @@ public class ToggleAlarm extends Activity implements View.OnClickListener{
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                // Set current status
                 prev = setStatus;
             }
         });
@@ -137,6 +142,9 @@ public class ToggleAlarm extends Activity implements View.OnClickListener{
         @Override
         protected Void doInBackground(Void... params){
             try {
+                // Connects to the URL to access the configuration file and reads it line by line.
+                // The current status of the alarm is set by getting the value of the "alarm_set" key
+                // in the json
                 URL url = new URL("http://192.168.1.10/config.json");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
                 StringBuilder builder = new StringBuilder();
@@ -151,21 +159,32 @@ public class ToggleAlarm extends Activity implements View.OnClickListener{
                 prev = jsonObject.getString("alarm_set");
             }
             catch (Exception e) {
-                Log.d(TAG, "Error:" + e);
+                Log.d(TAG, "Error: " + e);
             }
             return null;
         }
 
         @Override
+        // Sets the current status and button to reflect the info taken from the json. Basically, it
+        // sets the text field and button when the activity is launched.
         protected void onPostExecute(Void result){
-            if (prev.equals("true")){
-                status.setText("ON");
-                toggle.setText("Disable Alarm");
+            try {
+                if (prev.equals("true")){
+                    status.setText("ON");
+                    toggle.setText("Disable Alarm");
+                }
+                else if (prev.equals("false"))
+                {
+                    status.setText("OFF");
+                    toggle.setText("Enable Alarm");
+                }
             }
-            else if (prev.equals("false"))
-            {
-                status.setText("OFF");
-                toggle.setText("Enable Alarm");
+            catch (Exception e) {
+                Log.d(TAG, "Error: " + e );
+                new AlertDialog.Builder(ToggleAlarm.this)
+                        .setMessage("Please ensure that your Pi is turned on.")
+                        .setPositiveButton("OK", null)
+                        .show();
             }
             super.onPostExecute(result);
         }

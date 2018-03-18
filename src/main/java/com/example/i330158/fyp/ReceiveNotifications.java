@@ -12,7 +12,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 /**
- * Created by i330158 on 17/02/2018.
+ * Created by Pao Yin Tan on 17/02/2018.
+ *
+ * This sends a token to the server for when multiple users are involved. Not useful for the scope
+ * of this project.
  */
 
 public class ReceiveNotifications extends FirebaseInstanceIdService {

@@ -1,6 +1,7 @@
 package com.example.i330158.fyp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,22 +19,27 @@ import java.util.Properties;
 import static android.content.ContentValues.TAG;
 
 /**
- * Created by I330158 on 27/01/2018.
+ * Created by Pao Yin Tan on 27/01/2018.
+ *
+ * This displays the live video stream in the app. NOT IMPLEMENTED DUE TO LIMITED RESOURCES.
  */
 
-public class VidStream extends Activity implements View.OnClickListener {
+public class VidStream extends Activity {
     private WebView web_view;
-    private Button alert;
     private Thread t;
+    // Saved preferences for user entered details
     SharedPreferences sharedPreferences;
+    public static String MyPREFERENCES = "MyPrefs";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_vidstream);
+        sharedPreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
         if (sharedPreferences.getBoolean("paired", false) == true) {
+            // Thread below stops ffmpeg process on the Pi
             t = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -63,14 +69,14 @@ public class VidStream extends Activity implements View.OnClickListener {
                 }
             });
             t.start();
+            // Displays the stream
             web_view = (WebView)findViewById(R.id.web_view);
             web_view.loadUrl("http://" + sharedPreferences.getString("IP", "Unknown IP") + ":8080/test.mjpg");
         }
-        alert = (Button)findViewById(R.id.alert);
-        alert.setOnClickListener(this);
     }
 
     @Override
+    // Stops the stream when user leaves activity
     protected void onStop(){
         super.onStop();
         if (sharedPreferences.getBoolean("paired", false) == true) {
@@ -104,10 +110,5 @@ public class VidStream extends Activity implements View.OnClickListener {
             });
             t.start();
         }
-    }
-
-    @Override
-    public void onClick(View view) {
-
     }
 }

@@ -17,7 +17,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 /**
- * Created by I330158 on 28/01/2018.
+ * Created by Pao Yin Tan on 28/01/2018.
+ *
+ * This is the settings page. There are 4 options to choose from: Set Up Quick Text,
+ * Pair With Camera, Enable/Disable Alarm, Logout.
  */
 
 public class Settings extends Activity implements AdapterView.OnItemClickListener{
@@ -53,6 +56,7 @@ public class Settings extends Activity implements AdapterView.OnItemClickListene
                 startActivity(alarmIntent);
                 break;
             case "Logout":
+                // Brings user back to the login page
                 LoginActivity.signInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {

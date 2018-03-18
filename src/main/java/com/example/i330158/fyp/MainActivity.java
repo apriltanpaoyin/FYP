@@ -22,15 +22,17 @@ import android.widget.Toast;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 /**
- * Created by I330158 on 24/01/2018.
+ * Created by Pao Yin Tan on 24/01/2018.
+ *
+ * This is the main menu of the app, where the user is brought to after launching the app.
  */
 
 public class MainActivity extends Activity implements AdapterView.OnItemClickListener{
     private ListView mainMenu;
-    private String[] mainOptions = {"Call 999", "Text Neighbour", "View Live Stream", "View Images",
-            "Settings"};
+    private String[] mainOptions = {"Call 999", "Text Neighbour", "View Images", "Settings"};
     public String phoneNum = "";
     public String message = "";
+    // Saved preferences for user entered details
     public SharedPreferences sharedPreferences;
     public static String MyPREFERENCES = "MyPrefs";
 
@@ -57,10 +59,11 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
             case "Text Neighbour":
                 sendText();
                 break;
+            /* NOT IMPLEMENTED
             case "View Live Stream":
                 Intent streamIntent = new Intent(MainActivity.this, VidStream.class);
                 startActivity(streamIntent);
-                break;
+                break;*/
             case "View Images":
                 Intent recordIntent = new Intent(MainActivity.this, Images.class);
                 startActivity(recordIntent);
@@ -72,10 +75,10 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
         }
     }
 
-    //https://www.tutorialspoint.com/android/android_phone_calls.htm
+    // Brings up call screen WITHOUT calling emergency services
     private void callEmergency(){
         String number = "999";
-        //ACTION_DIAL used cause emergency numbers cannot be auto-called
+        //ACTION_DIAL used because emergency numbers cannot be auto-called
         final Intent callIntent = new Intent(Intent.ACTION_DIAL);
         callIntent.setData(Uri.parse("tel:" + number));
 
@@ -96,6 +99,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
                 .show();
     }
 
+    // Sends a text without bringing up new screens
     public void sendText() {
         phoneNum = sharedPreferences.getString("Phone", "DEFAULT");
         message = sharedPreferences.getString("Text", "DEFAULT");
@@ -115,6 +119,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        // Sends text immediately
                         SmsManager manager = SmsManager.getDefault();
                         manager.sendTextMessage(phoneNum, null, message, null, null);
                         Toast.makeText(MainActivity.this, "Text sent", Toast.LENGTH_LONG).show();

@@ -14,13 +14,17 @@ import android.widget.Toast;
 import static android.content.ContentValues.TAG;
 
 /**
- * Created by i330158 on 03/02/2018.
+ * Created by Pao Yin Tan on 03/02/2018.
+ *
+ * This is where the user can save the IP address and password of the Pi. This is used for toggling
+ * the alarm and other connections to the Pi.
  */
 
 public class PairCamera extends Activity {
     private EditText ipAdd;
     private EditText piPwd;
     private Button save;
+    // Saved preferences for user entered details
     public SharedPreferences sharedPreferences;
     public static String MyPREFERENCES = "MyPrefs";
 
@@ -41,6 +45,7 @@ public class PairCamera extends Activity {
                 String ipAddr = ipAdd.getText().toString();
                 String password = piPwd.getText().toString();
 
+                // Saves entered details to shared preferences
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("IP", ipAddr);
                 editor.putString("Password", password);
@@ -50,7 +55,8 @@ public class PairCamera extends Activity {
             }
         });
 
+        // IP address is displayed so that the user can look at the saved details. Password not
+        // shown for security reasons.
         ipAdd.setText(sharedPreferences.getString("IP", ""));
-        piPwd.setText(sharedPreferences.getString("Password", ""));
     }
 }

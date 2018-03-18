@@ -11,14 +11,18 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 /**
- * Created by i330158 on 03/02/2018.
+ * Created by Pao Yin Tan on 03/02/2018.
+ *
+ * This is where the user can save a number and text message. The message is sent to the number when
+ * the user clicks on the Text Neighbour option in the main menu.
  */
 
 public class QuickText extends Activity {
-    public SharedPreferences sharedPreferences;
     private EditText phone;
     private EditText message;
     private Button save;
+    // Saved preferences for user entered details
+    public SharedPreferences sharedPreferences;
     public static String MyPREFERENCES = "MyPrefs";
 
     @Override
@@ -38,6 +42,7 @@ public class QuickText extends Activity {
                 String phoneNum = phone.getText().toString();
                 String textMessage = message.getText().toString();
 
+                // Saves entered details to shared preferences
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("Phone", phoneNum);
                 editor.putString("Text", textMessage);
@@ -46,6 +51,7 @@ public class QuickText extends Activity {
             }
         });
 
+        // Number and message is displayed so that the user can look at the saved details.
         phone.setText(sharedPreferences.getString("Phone", ""));
         message.setText(sharedPreferences.getString("Text", ""));
     }

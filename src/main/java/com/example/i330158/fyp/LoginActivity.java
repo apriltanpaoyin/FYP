@@ -6,11 +6,9 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -34,14 +32,18 @@ import java.util.Properties;
 
 import static android.content.ContentValues.TAG;
 
+/**
+ * Created by Pao Yin Tan on 24/01/2018.
+ *
+ * This is the login page of the app. User is shown this page when they are not logged in.
+ */
+
 public class LoginActivity extends Activity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private SignInButton signInButton;
     static GoogleSignInClient signInClient;
     private static int RC_SIGN_IN = 0;
     static  GoogleSignInAccount acc;
-    public SharedPreferences sharedPreferences;
-    public static String MyPREFERENCES = "MyPrefs";
 
     // TOKEN STUFF
     private static GoogleApiClient apiClient;
@@ -54,7 +56,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login);
-        sharedPreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
         signInButton = (com.google.android.gms.common.SignInButton)findViewById(R.id.signInButton);
         signInButton.setOnClickListener(this);
@@ -69,7 +70,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         token = FirebaseInstanceId.getInstance().getToken();
     }
 
-    //Check for previously signed in user & update UI accordingly
+    //Check for previously signed in user & update UI
     protected void onStart(){
         super.onStart();
         acc = GoogleSignIn.getLastSignedInAccount(this);
@@ -97,6 +98,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     protected void onResume(){
         super.onResume();
 
+        // Builds a connection for notifications
         if (apiClient == null) {
             apiClient = new GoogleApiClient.Builder(this)
                     .addApi(Drive.API)
@@ -110,13 +112,14 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     @Override
     public void onConnected(Bundle connectionHint) {
+        // SSH
+        // Update notify.py on the Pi with token; this sends notification from Pi to app
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     JSch jsch = new JSch();
-                    Session session = jsch.getSession("pi", /*sharedPreferences.getString("IP", "Unknown IP")*/"192.168.1.10", 22);
-//                    session.setPassword(sharedPreferences.getString("password", "Wrong password"));
+                    Session session = jsch.getSession("pi", "192.168.1.10", 22);
                     session.setPassword("raspberry");
 
                     // Avoid asking for key confirmation
@@ -143,7 +146,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 prevKey = token;
             }
         });
-        System.out.println(token);
         t.start();
     }
 
@@ -156,7 +158,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     public void onConnectionFailed(ConnectionResult result) {
         Log.i(TAG, "Google Api Client connection failed: " + result.toString());
         if (!result.hasResolution()) {
-            // show the localized error dialog.
+            // Show the error message
             GoogleApiAvailability.getInstance().getErrorDialog(this, result.getErrorCode(), 0)
                     .show();
             return;
@@ -180,7 +182,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         }
     }
 
-    private void updateUI(GoogleSignInAccount acc){
+    private void updateUI(GoogleSignInAccount acc) {
         if (acc != null) {
             Intent mainMenuIntent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(mainMenuIntent);
@@ -196,7 +198,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         }
     }
 
-    public static GoogleApiClient getGoogleApiClient(){
+    public static GoogleApiClient getGoogleApiClient() {
         return apiClient;
     }
 }
