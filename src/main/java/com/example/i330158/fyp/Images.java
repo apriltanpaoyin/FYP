@@ -6,6 +6,7 @@ import android.content.IntentSender;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -71,8 +72,14 @@ public class Images extends Activity implements View.OnClickListener{
     @Override
     // After selecting an image in the Drive pop-up, this method is executed
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        selectedDriveId = data.getParcelableExtra(OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
-        open();
+        try {
+            selectedDriveId = data.getParcelableExtra(OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
+            open();
+        }
+        catch (Exception e) {
+            Log.d(TAG, "Error: " + e);
+        }
+
     }
 
     private void open(){
