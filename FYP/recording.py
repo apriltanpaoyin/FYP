@@ -22,7 +22,7 @@ faceCnt = 0
 # Argument parser
 ap = argparse.ArgumentParser()
 ap.add_argument("-a", "--min-area", type = int, default = 700, help = "minimum area size")
-ap.add_argument("--conf", default = "conf.json")
+ap.add_argument("--conf", default = "/var/www/html/config.json")
 args = vars(ap.parse_args())
 
 # Initialize conf file
