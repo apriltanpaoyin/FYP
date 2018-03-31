@@ -28,7 +28,7 @@ public class ReceiveNotifications extends FirebaseInstanceIdService {
 
         OkHttpClient client = new OkHttpClient();
         RequestBody body = new FormBody.Builder()
-                .add("Token", token)
+                .add("token", token)
                 .build();
 
         Request req = new Request.Builder()

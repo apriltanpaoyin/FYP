@@ -50,7 +50,7 @@ public class Settings extends Activity implements AdapterView.OnItemClickListene
                 Intent camIntent = new Intent(Settings.this, PairCamera.class);
                 startActivity(camIntent);
                 break;
-            case "Enable/Disable Alarm":
+            case "Toggle Alarm":
                 Intent alarmIntent = new Intent(Settings.this, ToggleAlarm.class);
                 startActivity(alarmIntent);
                 break;
