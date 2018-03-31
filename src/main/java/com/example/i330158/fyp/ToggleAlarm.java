@@ -3,7 +3,6 @@ package com.example.i330158.fyp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -37,10 +36,11 @@ import static android.content.ContentValues.TAG;
  */
 
 public class ToggleAlarm extends Activity implements View.OnClickListener{
-    public TextView status;
-    public Button toggle;
-    public String prev;
-    public String setStatus;
+    TextView status;
+    Button toggle;
+    String prev;
+    String setStatus;
+    boolean connected = false;
     // Saved preferences for user entered details
     public SharedPreferences sharedPreferences;
     public static String MyPREFERENCES = "MyPrefs";
@@ -54,10 +54,13 @@ public class ToggleAlarm extends Activity implements View.OnClickListener{
 
         status = (TextView) findViewById(R.id.status);
         toggle = (Button)findViewById(R.id.button);
-        toggle.setOnClickListener(this);
 
         // Gets the current status of alarm. See class below.
         new ParseJson().execute();
+
+        if (connected){
+            toggle.setOnClickListener(this);
+        }
     }
 
     @Override
@@ -102,7 +105,7 @@ public class ToggleAlarm extends Activity implements View.OnClickListener{
                     String ip = sharedPreferences.getString("IP", "DEFAULT");
                     String pass = sharedPreferences.getString("Password", "DEFAULT ");
 
-                    if (ip.equals("DEFAULT") || pass.equals("DEFAULT")) {
+                    if (ip.equals("DEFAULT") || pass.equals("DEFAULT") || ip.equals("") || pass.equals("")) {
                         Toast.makeText(ToggleAlarm.this, "Please connect to the Pi in settings.", Toast.LENGTH_LONG).show();
                         return;
                     }
@@ -157,6 +160,7 @@ public class ToggleAlarm extends Activity implements View.OnClickListener{
 
                 JSONObject jsonObject = new JSONObject(stringJson);
                 prev = jsonObject.getString("alarm_set");
+                connected = true;
             }
             catch (Exception e) {
                 Log.d(TAG, "Error: " + e);

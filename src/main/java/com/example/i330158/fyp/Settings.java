@@ -1,18 +1,17 @@
 package com.example.i330158.fyp;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -25,7 +24,7 @@ import com.google.android.gms.tasks.Task;
 
 public class Settings extends Activity implements AdapterView.OnItemClickListener{
     private ListView settings;
-    private String[] settingOptions = {"Set Up Quick Text", "Pair With Camera", "Enable/Disable Alarm", "Logout"};
+    private String[] settingOptions = {"Set Up Quick Text", "Pair With Camera", "Toggle Alarm", "Logout"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,15 +55,28 @@ public class Settings extends Activity implements AdapterView.OnItemClickListene
                 startActivity(alarmIntent);
                 break;
             case "Logout":
-                // Brings user back to the login page
-                LoginActivity.signInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Intent loginIntent = new Intent(Settings.this, LoginActivity.class);
-                        startActivity(loginIntent);
-                    }
-                });
+                new AlertDialog.Builder(this)
+                        .setMessage("Are you sure?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                logout();
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
                 break;
         }
+    }
+
+    private void logout(){
+        // Brings user back to the login page
+        LoginActivity.signInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Intent loginIntent = new Intent(Settings.this, LoginActivity.class);
+                startActivity(loginIntent);
+            }
+        });
     }
 }

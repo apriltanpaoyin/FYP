@@ -19,8 +19,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-
 /**
  * Created by Pao Yin Tan on 24/01/2018.
  *
@@ -104,7 +102,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
         phoneNum = sharedPreferences.getString("Phone", "DEFAULT");
         message = sharedPreferences.getString("Text", "DEFAULT");
 
-        if (phoneNum.equals("DEFAULT") || message.equals("DEFAULT")) {
+        if (phoneNum.equals("DEFAULT") || message.equals("DEFAULT") || phoneNum.equals("") || message.equals("")) {
             Toast.makeText(this, "Please enter a phone number and message in settings.", Toast.LENGTH_LONG).show();
             return;
         }
