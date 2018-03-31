@@ -27,7 +27,6 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
 import java.util.Properties;
-
 import static android.content.ContentValues.TAG;
 
 /**
@@ -41,7 +40,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     private SignInButton signInButton;
     static GoogleSignInClient signInClient;
     private static int RC_SIGN_IN = 0;
-    static  GoogleSignInAccount acc;
+    public static  GoogleSignInAccount acc;
 
     // TOKEN STUFF
     private static GoogleApiClient apiClient;
@@ -66,7 +65,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         //Create client with provided info
         signInClient = GoogleSignIn.getClient(this, signInOptions);
         token = FirebaseInstanceId.getInstance().getToken();
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: " + token);
     }
 
     //Check for previously signed in user & update UI

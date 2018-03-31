@@ -24,11 +24,13 @@ public class ReceiveNotifications extends FirebaseInstanceIdService {
     @Override
     public void onTokenRefresh() {
         String token = FirebaseInstanceId.getInstance().getToken();
+        String email = LoginActivity.acc.getEmail();
         Log.d(TAG, "New token: " + token);
 
         OkHttpClient client = new OkHttpClient();
         RequestBody body = new FormBody.Builder()
                 .add("token", token)
+                .add("email", email)
                 .build();
 
         Request req = new Request.Builder()
