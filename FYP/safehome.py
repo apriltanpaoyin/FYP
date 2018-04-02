@@ -15,7 +15,7 @@ import notify
 # Define classifier
 lbp = cv2.CascadeClassifier("/home/pi/opencv/opencv/data/lbpcascades/lbpcascade_frontalface.xml");
 # Existing subject names
-subjects = ["", "Pao Yin"]
+subjects = ["", "Pao Yin", "Kieran"]
 prevName = ""
 faceCnt = 0
 
