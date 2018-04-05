@@ -1,11 +1,8 @@
 package com.example.i330158.fyp;
 
 import com.google.firebase.iid.FirebaseInstanceIdService;
-
-import android.provider.*;
-import android.provider.Settings;
-import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
+import android.util.Log;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

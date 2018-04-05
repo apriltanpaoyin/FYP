@@ -86,19 +86,25 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         //If returned result is expected
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-//            apiClient.connect();
-            // Builds a connection for notifications
-            if (apiClient == null) {
-                apiClient = new GoogleApiClient.Builder(this)
-                        .addApi(Drive.API)
-                        .addScope(Drive.SCOPE_FILE)
-                        .addConnectionCallbacks(this)
-                        .addOnConnectionFailedListener(this)
-                        .build();
-            }
             apiClient.connect();
             handleSignIn(task);
         }
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        // Builds a connection for notifications
+        if (apiClient == null) {
+            apiClient = new GoogleApiClient.Builder(this)
+                    .addApi(Drive.API)
+                    .addScope(Drive.SCOPE_FILE)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+        }
+        apiClient.connect();
     }
 
     @Override
