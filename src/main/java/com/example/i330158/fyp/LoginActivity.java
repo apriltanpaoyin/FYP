@@ -190,6 +190,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     public void onClick(View view){
         switch (view.getId()) {
             case R.id.signInButton:
+                apiClient.disconnect();
                 signIn();
                 break;
         }

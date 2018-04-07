@@ -78,7 +78,6 @@ public class Images extends Activity implements View.OnClickListener{
         catch (Exception e) {
             Log.d(TAG, "Error: " + e);
         }
-
     }
 
     private void open(){
