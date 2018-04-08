@@ -83,7 +83,6 @@ def predict(img):
 	
 def alarm_sound():
 	# Plays alarm for a set time
-	print("ALARM")
 	player.play()
 	time.sleep(3)
 	player.stop()
