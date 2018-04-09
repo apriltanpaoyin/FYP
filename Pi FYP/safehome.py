@@ -55,7 +55,6 @@ def predict(img):
 	face, box = predict_detect(img)
 
 	if face is None:
-		print("no face")
 		faceCnt = 0
 		return None
 	
@@ -64,16 +63,14 @@ def predict(img):
 	face_recognizer.read("face_model.xml")
 	label, confidence = face_recognizer.predict(face)
 	name = subjects[label]
-	print(name)
+
 	# Draw box around predicted face
 	(x, y, w, h) = box
 	
 	if confidence < 120:
 		if name == prevName:
-			print("facecnt++")
 			faceCnt += 1
 		else:
-			print("facecnt 0")
 			prevName = name
 			faceCnt = 0
 			
@@ -163,10 +160,7 @@ while True:
 		# Ignore contours that are too small
 		if cv2.contourArea(c) < args["min_area"]:
 			continue
-			
-		# Boundary for box
-		(x, y, w, h) = cv2.boundingRect(c)
-		cv2.rectangle(I, (x, y), (x+w, y+h), (0, 255, 0), 2)
+		
 		text = "Motion Detected"
 	
 	timestmp = datetime.datetime.now().strftime("%A %d %B %Y %I:%M:%S%p")
