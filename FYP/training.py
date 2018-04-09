@@ -3,11 +3,11 @@ import os
 import numpy as np
 
 # Existing subject names
-subjects = ["", "Mark Zuckerberg", "Pao Yin", "Jack Ma"]
+# subjects = ["", "Pao Yin", ""]
 
 def predict_detect(img):
 	gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-	face_cascade = cv2.CascadeClassifier('/home/pi/opencv/opencv/data/lbpcascades/lbpcascade_frontalface.xml')
+	face_cascade = cv2.CascadeClassifier('C:\opencv\sources\data\lbpcascades\lbpcascade_frontalface.xml')
 	faces = face_cascade.detectMultiScale(gray, scaleFactor = 1.2, minNeighbors = 15)
 	
 	if (len(faces) == 0):
@@ -35,6 +35,7 @@ def prepare_training_data(data_folder_path):
 				continue;
 			
 			img_path = subject_dir_path + "/" + img_name
+			print (img_path)
 			img = cv2.imread(img_path)
 			
 			face, box = predict_detect(img)
@@ -46,7 +47,9 @@ def prepare_training_data(data_folder_path):
 	return faces, labels
 
 # Train on pre-loaded images
+print ("Training...")
 faces, labels = prepare_training_data("training-data")
 face_recognizer = cv2.face.LBPHFaceRecognizer_create()
 face_recognizer.train(faces, np.array(labels))
+print ("Training Done!")
 face_recognizer.write("face_model.xml")
