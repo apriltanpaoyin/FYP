@@ -25,9 +25,6 @@ ap.add_argument("-a", "--min-area", type = int, default = 700, help = "minimum a
 ap.add_argument("--conf", default = "/var/www/html/config.json")
 args = vars(ap.parse_args())
 
-# Initialize conf file
-conf = json.load(open(args["conf"]))
-
 # Initialize sound file
 player = vlc.MediaPlayer("file:///home/pi/FYP/sounds/alarm.mp3")
 
@@ -58,6 +55,8 @@ def predict(img):
 	face, box = predict_detect(img)
 
 	if face is None:
+		print("no face")
+		faceCnt = 0
 		return None
 	
 	face_recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -65,14 +64,16 @@ def predict(img):
 	face_recognizer.read("face_model.xml")
 	label, confidence = face_recognizer.predict(face)
 	name = subjects[label]
-	
+	print(name)
 	# Draw box around predicted face
 	(x, y, w, h) = box
 	
 	if confidence < 120:
 		if name == prevName:
+			print("facecnt++")
 			faceCnt += 1
 		else:
+			print("facecnt 0")
 			prevName = name
 			faceCnt = 0
 			
@@ -133,6 +134,8 @@ camera = cv2.VideoCapture(0)
 first = None
 
 while True:
+	# Initialize conf file
+	conf = json.load(open(args["conf"]))
 	(grabbed, I) = camera.read()
 	text = "No motion detected"
 	
