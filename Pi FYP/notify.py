@@ -1,3 +1,6 @@
+'''
+	This code is used to send notifications to the registered user when an upload occurs.
+'''
 from pyfcm import FCMNotification
 import g_drive
 

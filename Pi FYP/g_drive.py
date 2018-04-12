@@ -1,3 +1,7 @@
+'''
+	This code is used for uploading images to the User's Google Drive. 
+	A temporary image is created using the tempimage file.
+'''
 from tempimage import TempImage
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
@@ -21,6 +25,7 @@ def get_tmpimg():
 
 def authentication():
 	try:
+		# Check if there are saved credentials. If not, prompt user then save it.
 		gauth.LoadCredentialsFile("credentials.txt")
 		
 		if gauth.credentials is None:
@@ -34,6 +39,7 @@ def authentication():
 	except RuntimeError as e:
 		print(e)
 		
+# Creates a file and uploads to Drive
 def uploader(timestamp, temp):
 	file = drive.CreateFile()
 	file.SetContentFile(temp.path)

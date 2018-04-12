@@ -1,3 +1,6 @@
+'''
+	This file creates a temporary image file and will delete it after it is no longer needed.
+'''
 import uuid
 import os
 

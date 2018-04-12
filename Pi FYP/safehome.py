@@ -1,3 +1,9 @@
+'''
+	This is the code for the main processing. It performs facial detection, facial recognition, 
+	and motion detection. Uploads, notifications and the alarm is triggered in this file as well.
+	Uploads uses the g_drive file, notifications uses the notify file. Alarms are played as a 
+	thread using the VLC library.
+'''
 import cv2
 import argparse
 import datetime
@@ -37,7 +43,7 @@ g_drive.authentication()
 gauth = g_drive.get_gauth()
 drive = g_drive.get_drive()
 
-# Used for face recog
+# Detects faces in an image passed as a parameter using lbp cascade
 def predict_detect(img):
 	gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 	face_cascade = cv2.CascadeClassifier('/home/pi/opencv/opencv/data/lbpcascades/lbpcascade_frontalface.xml')
@@ -49,7 +55,7 @@ def predict_detect(img):
 	(x, y, w, h) = faces[0]
 	return gray[y:y+w, x:x+h], faces[0]
 
-# Make predictions
+# Make predictions on a detected face
 def predict(img):
 	global prevName, faceCnt
 	face, box = predict_detect(img)
@@ -67,6 +73,7 @@ def predict(img):
 	# Draw box around predicted face
 	(x, y, w, h) = box
 	
+	# Lower confidence means it is more accurate. Prevents false positives.
 	if confidence < 120:
 		if name == prevName:
 			faceCnt += 1
@@ -124,10 +131,10 @@ def upload_image():
 			lastUpload = currentTime
 			motionFrames = 0          
 
-#Read from webcam
+# Read from webcam
 camera = cv2.VideoCapture(0)
 
-#Initialize first frame
+# Initialize first frame
 first = None
 
 while True:
@@ -136,7 +143,7 @@ while True:
 	(grabbed, I) = camera.read()
 	text = "No motion detected"
 	
-	#If can't get frame
+	# If can't get frame
 	if not grabbed:
 		break
 	
@@ -167,9 +174,8 @@ while True:
 	cv2.putText(I, "Status: {}".format(text), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 	cv2.putText(I, timestmp, (10, I.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
 	
-	# If movement, upload to drive
 	if text == "Motion Detected":
-		# Predict the first detected face
+		# Predict the first detected face.
 		predicted = predict(I)
 		upload_image()
 	else:
