@@ -1,10 +1,14 @@
+'''
+	This code is used to train a number of images so that it can be used in facial recognition. 
+	The trained model is written to disk. The images are labeled with a number that correlates 
+	to the user so that they can be identified. Training uses the LBPH face recognizer to generate
+	a model.
+'''
 import cv2
 import os
 import numpy as np
 
-# Existing subject names
-# subjects = ["", "Pao Yin", ""]
-
+# Detect faces using lbp cascade
 def predict_detect(img):
 	gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 	face_cascade = cv2.CascadeClassifier('C:\opencv\sources\data\lbpcascades\lbpcascade_frontalface.xml')

@@ -60,7 +60,7 @@ public class ToggleAlarm extends Activity implements View.OnClickListener{
 
         // Wait for parse to finish so that connected is updated.
         try {
-            Thread.sleep(100);
+            Thread.sleep(500);
 
             if (connected){
                 toggle.setOnClickListener(this);
