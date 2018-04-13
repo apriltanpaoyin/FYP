@@ -25,6 +25,8 @@ public class ReceiveNotifications extends FirebaseInstanceIdService {
         Log.d(TAG, "New token: " + token);
 
         OkHttpClient client = new OkHttpClient();
+
+        // Create a request, populate it, then send it to the URL
         RequestBody body = new FormBody.Builder()
                 .add("token", token)
                 .add("email", email)

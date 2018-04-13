@@ -19,8 +19,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-
 /**
  * Created by Pao Yin Tan on 24/01/2018.
  *
@@ -59,11 +57,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
             case "Text Neighbour":
                 sendText();
                 break;
-            /* NOT IMPLEMENTED
-            case "View Live Stream":
-                Intent streamIntent = new Intent(MainActivity.this, VidStream.class);
-                startActivity(streamIntent);
-                break;*/
             case "View Images":
                 Intent recordIntent = new Intent(MainActivity.this, Images.class);
                 startActivity(recordIntent);
